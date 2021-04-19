@@ -1,0 +1,103 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="container" style="margin-top:20px;">
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-2">
+                DNI Jefe Departamento
+            </div>
+            <div class="col-md-3">
+                <input type="text" class="form-control" placeholder="DNI Jefe Departamento" id="DniJefe" />
+            </div>
+            <div class="col-md-2">
+                <button class="form-control" value="Consultar" onclick="Consultar()"> Consultar</button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>DNI</th>
+                    <th>Apellidos</th>
+                    <th>Nombres</th>
+                    <th>Correo</th>
+                    <th>Celular</th>
+                    <th>Nombre Departamento</th>
+                </tr>
+            </thead>
+            <tbody id="bodyConsulta">
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    function Consultar() {
+        if ($("#DniJefe").val()=='') {
+            alert("Ingresar Numero de DNI");
+            return false;
+        }
+        $("#bodyconsulta").empty()
+        var data = {}
+        var rowdata = '';
+        data.DNI = $("#DniJefe").val();
+        $.ajax({
+            type: "POST",
+            url: "/Home/ObtenerConsultaEmpleados",
+            content: "application/json; charset=utf-8",
+            dataType: "json",
+            data: data,
+            success: function (response) {
+                console.log(response);
+                if (response.Data.length <= 0) {
+                    alert("Este DNI no pertenece a un jefe de departamento");
+                } else {
+                    for (var i = 0; i < response.Data.length; i++) {
+
+                        rowdata = rowdata + '<tr><td>' + response.Data[i].DNI + '</td>';
+                        rowdata = rowdata + '<td>' + response.Data[i].Apellidos + '</td>';
+                        rowdata = rowdata + '<td>' + response.Data[i].Nombres + '</td>';
+                        rowdata = rowdata + '<td>' + response.Data[i].Correo + '</td>';
+                        rowdata = rowdata + '<td>' + response.Data[i].Celular + '</td>';
+                        rowdata = rowdata + '<td>' + response.Data[i].Departamento + '</td>';
+                        rowdata = rowdata + '</tr>';
+                        //  rowdata = rowdata + '<tr><td>' + response.data[i].id + '</td><td>' + response.data[i].name + '</td></tr>';
+                    }
+                    console.log(rowdata);
+                    $("#bodyConsulta").append(rowdata);
+                }
+
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                alert('Error!!');
+            }
+        });
+        //$.getJSON("/Home/ObtenerConsultaEmpleados", data, function (response) {
+        //    var rowData = "";
+        //    console.log(response);
+        //    for (var i = 0; i < response.Data.length; i++) {
+
+        //        rowData = rowData + '<tr><td>' + response.Data[i].COD_LINEA_NEGOCIO + '</td>';
+        //        rowData = rowData + '<td>' + response.Data[i].COD_MODAL_EST + '</td>'
+        //        rowData = rowData + '  <td>x</td> ' +
+        //            ' < td > x</td >' +
+        //            ' < td > x</td > ' +
+        //            ' < td > x</td > ' +
+        //            ' <td>x</td>' +
+        //            '     <td>x</td>' +
+        //            '  <td>x</td>' +
+        //            '   <td>x</td>' +
+        //            '   <td>x</td>' +
+        //            '   <td>x</td>' +
+        //            '   <td>x</td>';
+
+        //        rowData = rowData + '</tr>';
+        //        //  rowData = rowData + '<tr><td>' + response.Data[i].Id + '</td><td>' + response.Data[i].Name + '</td></tr>';
+        //    }
+        //    $("#bodyConsulta").append(rowData);
+        //});
+    }
+</script>
